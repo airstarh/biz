@@ -17,20 +17,58 @@
 ## Структура проекта
 
 ```
-/app
-    /Http
-        /Controllers
-    /Models
-    /Providers
-    /Services
-/bootstrap
-/config
-/database
-/docker
-/public
-/resources
-/routes
-/tests
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+├── [app]
+│   ├── [Http]
+│   │   └── [Controllers]
+│   │       ├── AvailabilityController.php
+│   │       ├── Controller.php
+│   │       └── HoldController.php
+│   ├── [Models]
+│   │   ├── Hold.php
+│   │   ├── Slot.php
+│   │   └── User.php
+│   ├── [Providers]
+│   │   └── AppServiceProvider.php
+│   └── [Services]
+│       └── SlotService.php
+...
+├── [database]
+│   ├── [factories]
+│   │   ├── HoldFactory.php
+│   │   ├── SlotFactory.php
+│   │   └── UserFactory.php
+│   ├── [migrations]
+│   │   ├── 0001_01_01_000000_create_users_table.php
+│   │   ├── 0001_01_01_000001_create_cache_table.php
+│   │   ├── 0001_01_01_000002_create_jobs_table.php
+│   │   ├── 2026_08_12_000000_create_slots_table.php
+│   │   └── 2026_08_12_000001_create_holds_table.php
+│   ├── [seeders]
+│   │   └── DatabaseSeeder.php
+│   └── .gitignore
+├── [docker]
+│   ├── [nginx]
+│   │   └── default.conf
+│   └── [php]
+│       └── local.ini
+...
+├── [routes]
+│   ├── console.php
+│   └── web.php
+├── [soft]
+│   └── composer.phar
+...
+├── a.010.run.sh
+├── a.build.log
+├── docker-compose.yml
+├── Dockerfile
+├── .dockerignore
+├── .env
+├── .gitattributes
+├── README.md
+...
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
 ## Установка и запуск
