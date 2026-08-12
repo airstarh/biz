@@ -1,0 +1,105 @@
+📁 /home/qqq/_A001/rep/stl/app
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+├── [app]
+│   ├── [Http]
+│   │   └── [Controllers]
+│   │       ├── AvailabilityController.php
+│   │       ├── Controller.php
+│   │       └── HoldController.php
+│   ├── [Models]
+│   │   ├── Hold.php
+│   │   ├── Slot.php
+│   │   └── User.php
+│   ├── [Providers]
+│   │   └── AppServiceProvider.php
+│   └── [Services]
+│       └── SlotService.php
+├── [bootstrap]
+│   ├── [cache]
+│   │   ├── .gitignore
+│   │   ├── packages.php
+│   │   └── services.php
+│   ├── app.php
+│   └── providers.php
+├── [config]
+│   ├── app.php
+│   ├── auth.php
+│   ├── cache.php
+│   ├── database.php
+│   ├── filesystems.php
+│   ├── logging.php
+│   ├── mail.php
+│   ├── queue.php
+│   ├── services.php
+│   └── session.php
+├── [database]
+│   ├── [factories]
+│   │   ├── HoldFactory.php
+│   │   ├── SlotFactory.php
+│   │   └── UserFactory.php
+│   ├── [migrations]
+│   │   ├── 0001_01_01_000000_create_users_table.php
+│   │   ├── 0001_01_01_000001_create_cache_table.php
+│   │   ├── 0001_01_01_000002_create_jobs_table.php
+│   │   ├── 2026_08_12_000000_create_slots_table.php
+│   │   └── 2026_08_12_000001_create_holds_table.php
+│   ├── [seeders]
+│   │   └── DatabaseSeeder.php
+│   └── .gitignore
+├── [docker]
+│   ├── [nginx]
+│   │   └── default.conf
+│   └── [php]
+│       └── local.ini
+├── [public]
+│   ├── favicon.ico
+│   ├── .htaccess
+│   ├── index.php
+│   └── robots.txt
+├── [resources]
+│   ├── [css]
+│   │   └── app.css
+│   ├── [js]
+│   │   ├── app.js
+│   │   └── bootstrap.js
+│   └── [views]
+│       └── welcome.blade.php
+├── [routes]
+│   ├── console.php
+│   └── web.php
+├── [soft]
+│   └── composer.phar
+├── [tests]
+│   ├── [Feature]
+│   │   └── ExampleTest.php
+│   ├── [Unit]
+│   │   └── ExampleTest.php
+│   └── TestCase.php
+├── a.010.run.sh
+├── a.build.log
+├── artisan
+├── composer.json
+├── composer.lock
+├── docker-compose.yml
+├── docker-entrypoint.sh
+├── Dockerfile
+├── Dockerfile.bkp001
+├── .dockerignore
+├── .editorconfig
+├── entrypoint.php82.sh
+├── entrypoint.php82.vol.sh
+├── .env
+├── .env.example
+├── .gitattributes
+├── .gitignore
+├── package.json
+├── phpunit.xml
+├── README.md
+└── vite.config.js
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📊 Summary:
+  📂 Directories: 26
+  📄 Files: 70
+  📦 Total items: 96
+  📏 Max depth: 4

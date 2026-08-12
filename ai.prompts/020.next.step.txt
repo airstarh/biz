@@ -1,0 +1,21 @@
+Сейчас сделано:
+```
+Route::prefix('api/v1')->group(function () {
+    Route::get('/slots/availability', [AvailabilityController::class, 'index']);
+    Route::post('/slots/{id}/hold', [HoldController::class, 'createHold']);
+    Route::post('/holds/{id}/confirm', [HoldController::class, 'confirmHold']);
+    Route::delete('/holds/{id}', [HoldController::class, 'cancelHold']);
+});
+```
+
+Следующие шаги по развитию проекта:
+1. Тестирование системы
+Unit-тесты для моделей и сервисов
+Feature-тесты для API эндпоинтов
+Стресс-тесты на многопочность и защиту от оверсела
+Тесты производительности с учетом кеширования
+2. Улучшение безопасности
+Валидация входных данных на всех уровнях
+Защита от злоупотреблений (rate limiting)
+Логирование критических операций
+Обработка edge-кейсов
