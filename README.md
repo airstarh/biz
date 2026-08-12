@@ -82,25 +82,14 @@
 
 ### Процесс установки
 
-1. Клонирование репозитория:
+1. Первый запуск:
 ```bash
-git clone <ссылка-на-репозиторий>
-cd проект
+git clone airstarh/biz biz
+cd biz
+bash a.010.run.sh
 ```
 
-2. Установка зависимостей:
-```bash
-composer install
-npm install
-```
-
-3. Настройка окружения:
-```bash
-cp .env.example .env
-# Настройте параметры в .env
-```
-
-4. Запуск через Docker:
+3. Все последующие запуски через:
 ```bash
 docker compose up -d
 ```
@@ -108,8 +97,8 @@ docker compose up -d
 ### Миграции и начальные данные
 
 ```bash
-php artisan migrate
-php artisan db:seed
+docker exec -it cont_va_stl_app php artisan migrate
+docker exec -it cont_va_stl_app php artisan db:seed
 ```
 
 ## Документация API
@@ -133,22 +122,9 @@ php artisan db:seed
 php artisan test
 ```
 
-## Участие в разработке
-
-Если вы хотите внести свой вклад в проект, следуйте этим шагам:
-
-1. Создайте форк репозитория
-2. Создайте новую ветку для вашей функциональности
-3. Сделайте коммит с изменениями
-4. Создайте пул-реквест
-
 ## Лицензия
 
 Проект распространяется под лицензией MIT.
-
-## Контакты
-
-По вопросам и предложениям обращайтесь к команде разработчиков.
 
 ---
 
