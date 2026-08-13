@@ -6,111 +6,160 @@ use App\Models\Slot;
 use App\Models\Hold;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Database\QueryException;
-use Illuminate\Cache\LockTimeoutException;
+use Illuminate\Support\Str;
 
 class SlotService
 {
-    protected $cacheKey = 'slots:availability';
-    protected $cacheDuration = 15; // в секундах
-    protected $idempotencyCacheKey = 'idempotency:';
-    protected $holdExpiration = 300; // 5 минут для холдов
+    private const CACHE_KEY = 'available_slots';
+    private const CACHE_TTL = 15; // seconds
 
     public function getAvailableSlots()
     {
-        return Cache::remember($this->cacheKey, $this->cacheDuration, function () {
-            return Slot::with('holds')
+        // Cache stampede protection using mutex
+        $lock = Cache::lock(self::CACHE_KEY . '_mutex', 5);
+
+        try {
+            // Try to get from cache
+            $slots = Cache::get(self::CACHE_KEY);
+
+            if ($slots !== null) {
+                return $slots;
+            }
+
+            // If cache miss, acquire lock
+            if ($lock->get()) {
+                try {
+                    // Get from database
+                    $slots = Slot::select('id', 'capacity', 'remaining')
+                        ->where('remaining', '>', 0)
+                        ->get();
+
+                    // Store in cache
+                    Cache::put(self::CACHE_KEY, $slots, self::CACHE_TTL);
+
+                    return $slots;
+                } finally {
+                    $lock->release();
+                }
+            }
+
+            // If can't acquire lock, wait and retry
+            return $this->getAvailableSlots();
+        } catch (\Exception $e) {
+            // Fallback to database query if cache fails
+            return Slot::select('id', 'capacity', 'remaining')
                 ->where('remaining', '>', 0)
                 ->get();
-        });
+        }
     }
 
     public function createHold(int $slotId, string $idempotencyKey): array
     {
-        if (Cache::has($this->idempotencyCacheKey . $idempotencyKey)) {
-            return ['message' => 'Request already processed', 'status' => 200];
+        // Check if request already processed
+        $cachedResult = Cache::get("idempotent_{$idempotencyKey}");
+        if ($cachedResult) {
+            return $cachedResult;
         }
 
-        try {
-            $slot = Slot::lockForUpdate()->findOrFail($slotId);
+        DB::beginTransaction();
 
+        try {
+            $slot = Slot::findOrFail($slotId);
+
+            // Check availability
             if ($slot->remaining <= 0) {
                 throw new \Exception('No available slots');
             }
 
+            // Create hold
             $hold = Hold::create([
                 'slot_id' => $slotId,
-                'status' => 'held',
-                'expires_at' => now()->addSeconds($this->holdExpiration)
+                'status' => Hold::STATUS_HELD,
+                'expires_at' => now()->addMinutes(5),
             ]);
 
-            Cache::put($this->idempotencyCacheKey . $idempotencyKey, true, 1);
-            $this->invalidateCache();
+            // Decrement remaining
+            $slot->decrement('remaining');
 
-            return ['hold' => $hold, 'status' => 201];
-        } catch (QueryException $e) {
-            return ['error' => 'Database error', 'status' => 500];
-        } catch (\Exception $e) {
-            return ['error' => $e->getMessage(), 'status' => 409];
-        }
-    }
-
-    public function confirmHold(Hold $hold): array
-    {
-        DB::beginTransaction();
-        
-        try {
-            $slot = $hold->slot;
-
-            if ($slot->remaining <= 0) {
-                throw new \Exception('No available slots');
-            }
-
-            DB::updateOrFail(
-                'UPDATE slots SET remaining = remaining - 1 WHERE id = ? AND remaining > 0',
-                [$slot->id]
-            );
-
-            $hold->update(['status' => 'confirmed']);
             DB::commit();
+
+            // Invalidate cache
             $this->invalidateCache();
 
-            return ['message' => 'Hold confirmed', 'status' => 200];
+            $result = [
+                'hold' => $hold,
+                'message' => 'Hold created successfully',
+                'status' => 201
+            ];
+
+            // Cache idempotent result
+            Cache::put("idempotent_{$idempotencyKey}", $result, 600);
+
+            return $result;
+
         } catch (\Exception $e) {
             DB::rollBack();
-            return ['error' => 'Conflict', 'status' => 409];
+            throw $e;
         }
     }
 
-    public function cancelHold(Hold $hold): array
+    public function confirmHold(Hold $hold): void
     {
+        DB::beginTransaction();
+
         try {
-            $hold->slot->increment('remaining');
-            $hold->update(['status' => 'cancelled']);
+            // Check if hold is still valid
+            if ($hold->status !== Hold::STATUS_HELD) {
+                throw new \Exception('Hold is not in held status');
+            }
+
+            if ($hold->expires_at < now()) {
+                throw new \Exception('Hold has expired');
+            }
+
+            // Update hold status
+            $hold->update(['status' => Hold::STATUS_CONFIRMED]);
+
+            DB::commit();
+
+            // Invalidate cache
             $this->invalidateCache();
 
-            return ['message' => 'Hold cancelled', 'status' => 200];
         } catch (\Exception $e) {
-            return ['error' => 'Error cancelling hold', 'status' => 500];
+            DB::rollBack();
+            throw $e;
         }
     }
 
-    public function invalidateCache()
+    public function cancelHold(Hold $hold): void
     {
-        Cache::forget($this->cacheKey);
-    }
-
-    public function processHold($slotId, $idempotencyKey, $request): array
-    {
-        if (Cache::has($this->idempotencyCacheKey . $idempotencyKey)) {
-            return ['message' => 'Request already processed', 'status' => 200];
-        }
+        DB::beginTransaction();
 
         try {
-            Cache::put($this->idempotencyCacheKey . $idempotencyKey, true, 1);
-            return $this->createHold($slotId, $idempotencyKey);
+            // Check if hold can be cancelled
+            if ($hold->status === Hold::STATUS_CONFIRMED) {
+                throw new \Exception('Confirmed hold cannot be cancelled');
+            }
+
+            // Update hold status
+            $hold->update(['status' => Hold::STATUS_CANCELLED]);
+
+            // Return slot
+            $hold->slot->increment('remaining');
+
+            DB::commit();
+
+            // Invalidate cache
+            $this->invalidateCache();
+
         } catch (\Exception $e) {
-            return ['error' => 'Internal server error', 'status' => 500];
+            DB::rollBack();
+            throw $e;
         }
+    }
+
+    public function invalidateCache(): void
+    {
+        Cache::forget(self::CACHE_KEY);
     }
 }

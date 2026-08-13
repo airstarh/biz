@@ -23,7 +23,7 @@ class HoldFactory extends Factory
 
         return [
             'slot_id' => $slot->id,
-            'status' => self::randomStatus(),
+            'status' => $this->randomStatus(), // Changed from self::randomStatus()
             'expires_at' => now()->addMinutes(5),
         ];
     }
@@ -31,9 +31,9 @@ class HoldFactory extends Factory
     /**
      * Возвращает случайный допустимый статус
      */
-    private static function randomStatus(): string
+    private function randomStatus(): string // Changed from static to non-static
     {
-        return self::$factory->randomElement([
+        return $this->faker->randomElement([ // Using $this->faker instead of self::$factory
             Hold::STATUS_HELD,
             Hold::STATUS_CONFIRMED,
             Hold::STATUS_CANCELLED

@@ -4,6 +4,7 @@ namespace Tests;
 
 use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\DB;
 
 trait CreatesApplication
 {
@@ -28,6 +29,15 @@ trait CreatesApplication
     {
         parent::setUp();
 
-        // Your custom setup here if needed
+        // Start a database transaction for each test
+        DB::beginTransaction();
+    }
+
+    protected function tearDown(): void
+    {
+        // Rollback the transaction after each test
+        DB::rollBack();
+
+        parent::tearDown();
     }
 }
