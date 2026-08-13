@@ -16,6 +16,7 @@ borg_fs_concat \
     ./tests/CreatesApplication.php \
     ./tests/TestCase.php \
     ./tests/Unit/Models/SlotTest.php \
+    ./tests/Unit/Models/HoldTest.php \
     ./phpunit.xml \
     Dockerfile \
     ./.env \

@@ -8,8 +8,6 @@ use Tests\TestCase;
 
 class SlotTest extends TestCase
 {
-    // Remove use RefreshDatabase;
-
     public function test_slot_can_be_created_with_fillable_attributes()
     {
         $slot = Slot::create([
@@ -45,10 +43,9 @@ class SlotTest extends TestCase
     {
         $this->expectException(\Illuminate\Database\QueryException::class);
 
-        // This should fail because remaining > capacity is not allowed by database constraint
         Slot::create([
             'capacity' => 5,
-            'remaining' => 10, // exceeds capacity
+            'remaining' => 10,
         ]);
     }
 
@@ -85,7 +82,7 @@ class SlotTest extends TestCase
             'remaining' => 0,
         ]);
 
-        // This should throw QueryException because unsigned column can't go below 0
+        // MySQL unsigned column prevents going below 0
         $slot->decrement('remaining');
     }
 }
