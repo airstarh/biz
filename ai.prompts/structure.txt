@@ -72,6 +72,7 @@
 │   └── [views]
 │       └── welcome.blade.php
 ├── [routes]
+│   ├── api.php
 │   ├── console.php
 │   └── web.php
 ├── [soft]
@@ -115,6 +116,6 @@
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📊 Summary:
   📂 Directories: 28
-  📄 Files: 83
-  📦 Total items: 111
+  📄 Files: 84
+  📦 Total items: 112
   📏 Max depth: 4

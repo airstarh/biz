@@ -8,7 +8,7 @@ borg_fs_concat \
     ./app/Models/Hold.php \
     ./app/Models/Slot.php \
     ./app/Services/SlotService.php \
-    ./routes/web.php \
+    ./routes/api.php \
     ./database/factories/HoldFactory.php \
     ./database/factories/SlotFactory.php \
     ./database/migrations/2026_08_12_000000_create_slots_table.php \
