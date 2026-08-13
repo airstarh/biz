@@ -18,6 +18,9 @@ borg_fs_concat \
     ./tests/Unit/Models/SlotTest.php \
     ./tests/Unit/Models/HoldTest.php \
     ./phpunit.xml \
+    ./tests/Feature/AvailabilityTest.php \
+    ./tests/Feature/HoldTest.php \
+    Dockerfile \
     Dockerfile \
     ./.env \
     docker-compose.yml \
