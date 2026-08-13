@@ -21,7 +21,8 @@ borg_fs_concat \
     ./tests/Feature/AvailabilityTest.php \
     ./tests/Feature/HoldTest.php \
     Dockerfile \
-    Dockerfile \
     ./.env \
     docker-compose.yml \
     > ./ai.prompts/codebase.txt
+
+borg_fs_tree . 4 > ./ai.prompts/structure.txt
