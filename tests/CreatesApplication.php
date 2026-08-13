@@ -2,6 +2,9 @@
 
 namespace Tests;
 
+use Illuminate\Contracts\Console\Kernel;
+use Illuminate\Foundation\Application;
+
 trait CreatesApplication
 {
     use \Illuminate\Foundation\Testing\Concerns\MakesHttpRequests;
@@ -9,30 +12,22 @@ trait CreatesApplication
     use \Illuminate\Foundation\Testing\Concerns\InteractsWithAuthentication;
     use \Illuminate\Foundation\Testing\Concerns\InteractsWithDatabase;
 
+    /**
+     * Creates the application.
+     */
+    public function createApplication(): Application
+    {
+        $app = require __DIR__.'/../bootstrap/app.php';
+
+        $app->make(Kernel::class)->bootstrap();
+
+        return $app;
+    }
+
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->setUpEnvironment();
-    }
-
-    protected function setUpEnvironment(): void
-    {
-        $this->setUpDatabase();
-        $this->setUpCache();
-    }
-
-    protected function setUpDatabase(): void
-    {
-        $this->beforeApplicationCreated(function () {
-            putenv('DB_CONNECTION=testing');
-        });
-    }
-
-    protected function setUpCache(): void
-    {
-        $this->beforeApplicationCreated(function () {
-            putenv('CACHE_DRIVER=array');
-        });
+        // Your custom setup here if needed
     }
 }
