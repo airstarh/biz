@@ -1,5 +1,11 @@
 📁 /home/qqq/_A001/rep/stl/app
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+├── [ai.prompts]
+│   ├── 010.context.txt
+│   ├── 020.next.step.txt
+│   ├── 022.test.simple.txt
+│   ├── 030.next.step.txt
+│   └── structure.txt
 ├── [app]
 │   ├── [Http]
 │   │   └── [Controllers]
@@ -74,6 +80,7 @@
 │   │   └── ExampleTest.php
 │   ├── [Unit]
 │   │   └── ExampleTest.php
+│   ├── CreatesApplication.php
 │   └── TestCase.php
 ├── a.010.run.sh
 ├── a.build.log
@@ -99,7 +106,7 @@
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📊 Summary:
-  📂 Directories: 26
-  📄 Files: 70
-  📦 Total items: 96
+  📂 Directories: 27
+  📄 Files: 76
+  📦 Total items: 103
   📏 Max depth: 4
