@@ -141,11 +141,19 @@ class SlotService
                 throw new \Exception('Confirmed hold cannot be cancelled');
             }
 
+            // Only cancel if it's still in 'held' status
+            if ($hold->status !== Hold::STATUS_HELD) {
+                throw new \Exception('Hold cannot be cancelled');
+            }
+
             // Update hold status
             $hold->update(['status' => Hold::STATUS_CANCELLED]);
 
-            // Return slot
-            $hold->slot->increment('remaining');
+            // Return slot - make sure it doesn't exceed capacity
+            $slot = $hold->slot;
+            if ($slot->remaining < $slot->capacity) {
+                $slot->increment('remaining');
+            }
 
             DB::commit();
 

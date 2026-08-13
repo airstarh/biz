@@ -45,9 +45,10 @@ class HoldController extends Controller
         }
     }
 
-    public function confirmHold(Hold $hold)
+    public function confirmHold($holdId)
     {
         try {
+            $hold = Hold::findOrFail($holdId);
             $this->slotService->confirmHold($hold);
 
             return response()->json([
@@ -55,6 +56,12 @@ class HoldController extends Controller
                 'status' => 200
             ]);
 
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json([
+                'error' => 'Not Found',
+                'message' => 'Hold not found',
+                'status' => 404
+            ], 404);
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'Conflict',
@@ -64,9 +71,10 @@ class HoldController extends Controller
         }
     }
 
-    public function cancelHold(Hold $hold)
+    public function cancelHold($holdId)
     {
         try {
+            $hold = Hold::findOrFail($holdId);
             $this->slotService->cancelHold($hold);
 
             return response()->json([
@@ -74,6 +82,12 @@ class HoldController extends Controller
                 'status' => 200
             ]);
 
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json([
+                'error' => 'Not Found',
+                'message' => 'Hold not found',
+                'status' => 404
+            ], 404);
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'Error cancelling hold',

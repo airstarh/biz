@@ -29,10 +29,7 @@ class HoldTest extends TestCase
                 'status'
             ]);
 
-        // Check if remaining was decremented
         $this->assertEquals(4, $slot->fresh()->remaining);
-
-        // Check if hold was created
         $this->assertDatabaseHas('holds', [
             'slot_id' => $slot->id,
             'status' => Hold::STATUS_HELD
@@ -73,39 +70,36 @@ class HoldTest extends TestCase
         $slot = Slot::create(['capacity' => 10, 'remaining' => 5]);
         $idempotencyKey = (string) Str::uuid();
 
-        // First request
         $response1 = $this->postJson("/api/v1/slots/{$slot->id}/hold", [], [
             'Idempotency-Key' => $idempotencyKey
         ]);
         $response1->assertStatus(201);
 
-        // Second request with same key
         $response2 = $this->postJson("/api/v1/slots/{$slot->id}/hold", [], [
             'Idempotency-Key' => $idempotencyKey
         ]);
         $response2->assertStatus(201);
 
-        // Should have same data
         $this->assertEquals(
             $response1->json('data.id'),
             $response2->json('data.id')
         );
 
-        // Remaining should NOT decrease again
         $this->assertEquals(4, $slot->fresh()->remaining);
-
-        // Should only have one hold
         $this->assertEquals(1, Hold::where('slot_id', $slot->id)->count());
     }
 
     public function test_can_confirm_hold()
     {
         $slot = Slot::create(['capacity' => 10, 'remaining' => 5]);
-        $hold = Hold::create([
-            'slot_id' => $slot->id,
-            'status' => Hold::STATUS_HELD,
-            'expires_at' => now()->addMinutes(5)
+
+        $idempotencyKey = (string) Str::uuid();
+        $response = $this->postJson("/api/v1/slots/{$slot->id}/hold", [], [
+            'Idempotency-Key' => $idempotencyKey
         ]);
+        $response->assertStatus(201);
+
+        $hold = Hold::where('slot_id', $slot->id)->first();
 
         $response = $this->postJson("/api/v1/holds/{$hold->id}/confirm");
 
@@ -121,11 +115,18 @@ class HoldTest extends TestCase
     public function test_cannot_confirm_expired_hold()
     {
         $slot = Slot::create(['capacity' => 10, 'remaining' => 5]);
-        $hold = Hold::create([
-            'slot_id' => $slot->id,
-            'status' => Hold::STATUS_HELD,
-            'expires_at' => now()->subMinutes(1) // Expired
+
+        // Create hold through the service
+        $idempotencyKey = (string) Str::uuid();
+        $response = $this->postJson("/api/v1/slots/{$slot->id}/hold", [], [
+            'Idempotency-Key' => $idempotencyKey
         ]);
+        $response->assertStatus(201);
+
+        $hold = Hold::where('slot_id', $slot->id)->first();
+
+        // Manually expire the hold
+        $hold->update(['expires_at' => now()->subMinutes(1)]);
 
         $response = $this->postJson("/api/v1/holds/{$hold->id}/confirm");
 
@@ -139,12 +140,21 @@ class HoldTest extends TestCase
     public function test_cannot_confirm_already_confirmed_hold()
     {
         $slot = Slot::create(['capacity' => 10, 'remaining' => 5]);
-        $hold = Hold::create([
-            'slot_id' => $slot->id,
-            'status' => Hold::STATUS_CONFIRMED,
-            'expires_at' => now()->addMinutes(5)
-        ]);
 
+        // Create hold through the service
+        $idempotencyKey = (string) Str::uuid();
+        $response = $this->postJson("/api/v1/slots/{$slot->id}/hold", [], [
+            'Idempotency-Key' => $idempotencyKey
+        ]);
+        $response->assertStatus(201);
+
+        $hold = Hold::where('slot_id', $slot->id)->first();
+
+        // Confirm first
+        $response = $this->postJson("/api/v1/holds/{$hold->id}/confirm");
+        $response->assertStatus(200);
+
+        // Try to confirm again
         $response = $this->postJson("/api/v1/holds/{$hold->id}/confirm");
 
         $response->assertStatus(409)
@@ -157,11 +167,15 @@ class HoldTest extends TestCase
     public function test_can_cancel_hold()
     {
         $slot = Slot::create(['capacity' => 10, 'remaining' => 5]);
-        $hold = Hold::create([
-            'slot_id' => $slot->id,
-            'status' => Hold::STATUS_HELD,
-            'expires_at' => now()->addMinutes(5)
+
+        // Create hold through the service
+        $idempotencyKey = (string) Str::uuid();
+        $response = $this->postJson("/api/v1/slots/{$slot->id}/hold", [], [
+            'Idempotency-Key' => $idempotencyKey
         ]);
+        $response->assertStatus(201);
+
+        $hold = Hold::where('slot_id', $slot->id)->first();
 
         $response = $this->deleteJson("/api/v1/holds/{$hold->id}");
 
@@ -172,18 +186,27 @@ class HoldTest extends TestCase
             ]);
 
         $this->assertEquals(Hold::STATUS_CANCELLED, $hold->fresh()->status);
-        $this->assertEquals(6, $slot->fresh()->remaining); // Returned the slot
+        $this->assertEquals(5, $slot->fresh()->remaining); // Returned the slot
     }
 
     public function test_cannot_cancel_confirmed_hold()
     {
         $slot = Slot::create(['capacity' => 10, 'remaining' => 5]);
-        $hold = Hold::create([
-            'slot_id' => $slot->id,
-            'status' => Hold::STATUS_CONFIRMED,
-            'expires_at' => now()->addMinutes(5)
-        ]);
 
+        // Create hold through the service
+        $idempotencyKey = (string) Str::uuid();
+        $response = $this->postJson("/api/v1/slots/{$slot->id}/hold", [], [
+            'Idempotency-Key' => $idempotencyKey
+        ]);
+        $response->assertStatus(201);
+
+        $hold = Hold::where('slot_id', $slot->id)->first();
+
+        // Confirm the hold first
+        $response = $this->postJson("/api/v1/holds/{$hold->id}/confirm");
+        $response->assertStatus(200);
+
+        // Try to cancel confirmed hold
         $response = $this->deleteJson("/api/v1/holds/{$hold->id}");
 
         $response->assertStatus(400)
@@ -193,17 +216,21 @@ class HoldTest extends TestCase
             ]);
 
         $this->assertEquals(Hold::STATUS_CONFIRMED, $hold->fresh()->status);
-        $this->assertEquals(5, $slot->fresh()->remaining); // No change
+        $this->assertEquals(4, $slot->fresh()->remaining); // Should be 4 (1 decremented)
     }
 
     public function test_confirmed_hold_decrements_remaining_atomically()
     {
         $slot = Slot::create(['capacity' => 10, 'remaining' => 5]);
-        $hold = Hold::create([
-            'slot_id' => $slot->id,
-            'status' => Hold::STATUS_HELD,
-            'expires_at' => now()->addMinutes(5)
+
+        // Create hold through the service (this decrements remaining)
+        $idempotencyKey = (string) Str::uuid();
+        $response = $this->postJson("/api/v1/slots/{$slot->id}/hold", [], [
+            'Idempotency-Key' => $idempotencyKey
         ]);
+        $response->assertStatus(201);
+
+        $hold = Hold::where('slot_id', $slot->id)->first();
 
         // Remaining should already be 4 (decremented when hold was created)
         $this->assertEquals(4, $slot->fresh()->remaining);
@@ -217,10 +244,8 @@ class HoldTest extends TestCase
 
     public function test_concurrent_hold_creation_prevents_overselling()
     {
-        // This tests race condition protection
         $slot = Slot::create(['capacity' => 10, 'remaining' => 1]);
 
-        // Simulate two concurrent requests (simplified - in real test you'd use parallel testing)
         $idempotencyKey1 = (string) Str::uuid();
         $idempotencyKey2 = (string) Str::uuid();
 
@@ -232,25 +257,9 @@ class HoldTest extends TestCase
             'Idempotency-Key' => $idempotencyKey2
         ]);
 
-        // One should succeed, one should fail
-        $successCount = 0;
-        $failCount = 0;
-
-        if ($response1->status() === 201) {
-            $successCount++;
-        }
-        if ($response2->status() === 201) {
-            $successCount++;
-        }
-        if ($response1->status() === 409) {
-            $failCount++;
-        }
-        if ($response2->status() === 409) {
-            $failCount++;
-        }
-
-        $this->assertEquals(1, $successCount, 'Only one request should succeed');
-        $this->assertEquals(1, $failCount, 'One request should fail with 409');
+        $statuses = [$response1->status(), $response2->status()];
+        $this->assertContains(201, $statuses);
+        $this->assertContains(409, $statuses);
         $this->assertEquals(0, $slot->fresh()->remaining);
     }
 }

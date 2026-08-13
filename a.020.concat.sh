@@ -20,6 +20,7 @@ borg_fs_concat \
     ./phpunit.xml \
     ./tests/Feature/AvailabilityTest.php \
     ./tests/Feature/HoldTest.php \
+    ./bootstrap/app.php \
     Dockerfile \
     ./.env \
     docker-compose.yml \
