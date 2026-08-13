@@ -80,13 +80,13 @@
 ├── [tests]
 │   ├── [Feature]
 │   │   ├── AvailabilityTest.php
-│   │   ├── ExampleTestXXX.php
+│   │   ├── ExampleTest.php
 │   │   └── HoldTest.php
 │   ├── [Unit]
 │   │   ├── [Models]
 │   │   │   ├── HoldTest.php
 │   │   │   └── SlotTest.php
-│   │   └── ExampleTestXXX.php
+│   │   └── ExampleTest.php
 │   ├── CreatesApplication.php
 │   └── TestCase.php
 ├── a.010.run.sh
