@@ -1,12 +1,3 @@
-Сейчас сделано:
-```
-Route::prefix('api/v1')->group(function () {
-    Route::get('/slots/availability', [AvailabilityController::class, 'index']);
-    Route::post('/slots/{id}/hold', [HoldController::class, 'createHold']);
-    Route::post('/holds/{id}/confirm', [HoldController::class, 'confirmHold']);
-    Route::delete('/holds/{id}', [HoldController::class, 'cancelHold']);
-});
-```
 
 Следующие шаги по развитию проекта:
 1. Тестирование системы
