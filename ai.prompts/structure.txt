@@ -5,6 +5,7 @@
 │   ├── 020.next.step.txt
 │   ├── 022.test.simple.txt
 │   ├── 030.next.step.txt
+│   ├── codebase.txt
 │   └── structure.txt
 ├── [app]
 │   ├── [Http]
@@ -77,12 +78,18 @@
 │   └── composer.phar
 ├── [tests]
 │   ├── [Feature]
-│   │   └── ExampleTest.php
+│   │   ├── AvailabilityTest.php
+│   │   ├── ExampleTestXXX.php
+│   │   └── HoldTest.php
 │   ├── [Unit]
-│   │   └── ExampleTest.php
+│   │   ├── [Models]
+│   │   │   ├── HoldTest.php
+│   │   │   └── SlotTest.php
+│   │   └── ExampleTestXXX.php
 │   ├── CreatesApplication.php
 │   └── TestCase.php
 ├── a.010.run.sh
+├── a.020.concat.sh
 ├── a.build.log
 ├── artisan
 ├── composer.json
@@ -100,13 +107,14 @@
 ├── .gitattributes
 ├── .gitignore
 ├── package.json
+├── .phpunit.result.cache
 ├── phpunit.xml
 ├── README.md
 └── vite.config.js
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📊 Summary:
-  📂 Directories: 27
-  📄 Files: 76
-  📦 Total items: 103
+  📂 Directories: 28
+  📄 Files: 83
+  📦 Total items: 111
   📏 Max depth: 4
