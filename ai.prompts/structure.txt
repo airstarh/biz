@@ -20,24 +20,6 @@
 │   │   └── AppServiceProvider.php
 │   └── [Services]
 │       └── SlotService.php
-├── [bootstrap]
-│   ├── [cache]
-│   │   ├── .gitignore
-│   │   ├── packages.php
-│   │   └── services.php
-│   ├── app.php
-│   └── providers.php
-├── [config]
-│   ├── app.php
-│   ├── auth.php
-│   ├── cache.php
-│   ├── database.php
-│   ├── filesystems.php
-│   ├── logging.php
-│   ├── mail.php
-│   ├── queue.php
-│   ├── services.php
-│   └── session.php
 ├── [database]
 │   ├── [factories]
 │   │   ├── HoldFactory.php
@@ -57,19 +39,6 @@
 │   │   └── default.conf
 │   └── [php]
 │       └── local.ini
-├── [public]
-│   ├── favicon.ico
-│   ├── .htaccess
-│   ├── index.php
-│   └── robots.txt
-├── [resources]
-│   ├── [css]
-│   │   └── app.css
-│   ├── [js]
-│   │   ├── app.js
-│   │   └── bootstrap.js
-│   └── [views]
-│       └── welcome.blade.php
 ├── [routes]
 │   ├── api.php
 │   ├── console.php
@@ -114,7 +83,7 @@
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📊 Summary:
-  📂 Directories: 28
-  📄 Files: 83
-  📦 Total items: 111
+  📂 Directories: 20
+  📄 Files: 60
+  📦 Total items: 80
   📏 Max depth: 4

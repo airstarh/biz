@@ -18,6 +18,12 @@
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+├── [ai.prompts]
+│   ├── 010.context.txt
+│   ├── 020.next.step.txt
+│   ├── 030.next.step.txt
+│   ├── codebase.txt
+│   └── structure.txt
 ├── [app]
 │   ├── [Http]
 │   │   └── [Controllers]
@@ -32,7 +38,6 @@
 │   │   └── AppServiceProvider.php
 │   └── [Services]
 │       └── SlotService.php
-...
 ├── [database]
 │   ├── [factories]
 │   │   ├── HoldFactory.php
@@ -52,22 +57,47 @@
 │   │   └── default.conf
 │   └── [php]
 │       └── local.ini
-...
 ├── [routes]
+│   ├── api.php
 │   ├── console.php
 │   └── web.php
 ├── [soft]
 │   └── composer.phar
-...
+├── [tests]
+│   ├── [Feature]
+│   │   ├── AvailabilityTest.php
+│   │   ├── ExampleTest.php
+│   │   └── HoldTest.php
+│   ├── [Unit]
+│   │   ├── [Models]
+│   │   │   ├── HoldTest.php
+│   │   │   └── SlotTest.php
+│   │   └── ExampleTest.php
+│   ├── CreatesApplication.php
+│   └── TestCase.php
 ├── a.010.run.sh
+├── a.020.concat.sh
 ├── a.build.log
+├── artisan
+├── composer.json
+├── composer.lock
 ├── docker-compose.yml
+├── docker-entrypoint.sh
 ├── Dockerfile
+├── Dockerfile.bkp001
 ├── .dockerignore
+├── .editorconfig
+├── entrypoint.php82.sh
+├── entrypoint.php82.vol.sh
 ├── .env
+├── .env.example
 ├── .gitattributes
+├── .gitignore
+├── package.json
+├── .phpunit.result.cache
+├── phpunit.xml
 ├── README.md
-...
+└── vite.config.js
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
@@ -250,11 +280,6 @@ Idempotency-Key: <UUID>
 
 ```bash
 php artisan test
-```
-
-## Лицензия
-
-Проект распространяется под лицензией MIT.
 
 ---
 
@@ -262,8 +287,8 @@ php artisan test
 
 В проекте реализованы следующие ключевые функции:
 
-- Управление пользователями
 - Работа со слотами
 - Система бронирования
 - API для интеграции
 - Автоматическое тестирование
+- Интеграционное тестирование
