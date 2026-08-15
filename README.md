@@ -276,9 +276,10 @@ Idempotency-Key: <UUID>
 
 ## Тестирование
 
-Для запуска тестов выполните команду:
+Для запуска тестов выполните команды:
 
 ```bash
+docker exec -it cont_va_stl_app bash
 php artisan test
 
 ---
