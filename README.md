@@ -281,6 +281,7 @@ Idempotency-Key: <UUID>
 ```bash
 docker exec -it cont_va_stl_app bash
 php artisan test
+```
 
 ---
 
